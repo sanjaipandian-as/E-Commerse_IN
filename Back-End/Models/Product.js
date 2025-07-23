@@ -7,6 +7,7 @@ const productSchema = new mongoose.Schema({
   image: String,
   stock: Number,
   category: String,
+  ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 
 module.exports = mongoose.model('Product', productSchema);
