@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthProvider } from "../contexts/AuthContext";
+import useAuth from "../hooks/useAuth"; // ✅ now this works
 import axios from "axios";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth();
+  const { login } = useAuth(); // ✅ now this works
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -17,7 +17,6 @@ export default function Login() {
         password,
       });
 
-      // ✅ Your backend must return { token, user }
       login(res.data.token, res.data.user);
 
       navigate("/");

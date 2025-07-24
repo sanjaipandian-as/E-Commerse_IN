@@ -1,9 +1,9 @@
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext"; // 👈 import the context
 import { Link } from "react-router-dom";
-// import { useAuth } from "../hooks/useAuth";
-import { AuthProvider } from "../contexts/AuthContext";
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout } = useContext(AuthContext); // ✅ CORRECT
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
