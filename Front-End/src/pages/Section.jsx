@@ -1,90 +1,143 @@
-import React from 'react';
-import { FaTshirt, FaMobileAlt, FaChild, FaUserTie } from "react-icons/fa";
+import React, { useState, useEffect, useContext } from "react";
+import axios from "axios";
+import MyDesign3 from "../assets/my-design3.jpg";
+import { CartContext } from "../context/CartContext";
+import { FaMale, FaFemale, FaChild, FaTv } from "react-icons/fa";
 
 function Section() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { addToCart } = useContext(CartContext);
+
   const categories = [
-    { name: "Men", icon: <FaUserTie size={28} /> },
-    { name: "Women", icon: <FaTshirt size={28} /> },
-    { name: "Kids", icon: <FaChild size={28} /> },
-    { name: "Electronics", icon: <FaMobileAlt size={28} /> },
+    { name: "Men", icon: <FaMale size={48} className="text-white" /> },
+    { name: "Women", icon: <FaFemale size={48} className="text-white" /> },
+    { name: "Kids", icon: <FaChild size={48} className="text-white" /> },
+    { name: "Electronics", icon: <FaTv size={48} className="text-white" /> },
   ];
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const { data } = await axios.get(
+          "http://localhost:5000/api/products/products"
+        );
+        setProducts(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.response?.data?.message || err.message);
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const getProductImage = (imageName) => {
+    if (!imageName) return "/images/no-image.jpg"; // fallback local image
+    return `http://localhost:5000/uploads/${imageName}`;
+  };
 
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-500">
-        <div className="container mx-auto flex flex-col md:flex-row items-center px-6 py-20">
-          {/* Text */}
-          <div className="flex-1 space-y-6">
-            <h2 className="text-5xl md:text-6xl font-extrabold leading-tight text-white drop-shadow-lg">
+      <section
+        className="relative bg-cover bg-center"
+        style={{ backgroundImage: `url(${MyDesign3})` }}
+      >
+        <div className="absolute inset-0 bg-black opacity-30"></div>
+        <div className="relative container mx-auto flex flex-col items-center justify-center text-center px-6 py-40">
+          <div className="space-y-6">
+            <h2 className="text-4xl md:text-5xl font-extrabold leading-tight text-white drop-shadow-lg">
               GET STARTED <br /> YOUR FAVORITE SHOPPING
             </h2>
             <button className="bg-black text-white px-8 py-3 font-semibold rounded-md transform transition duration-300 hover:scale-105 hover:bg-gray-900">
               BUY NOW
             </button>
           </div>
-
-          {/* Image */}
-          <div className="flex-1 mt-10 md:mt-0 flex justify-center">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWcCC2bZv4E8yoZIxw-t2GHMZlHOGHXSx7pw&s"
-              alt="Shopping Banner"
-              className="w-80 md:w-[400px] lg:w-[500px] rounded-lg shadow-lg transform transition hover:scale-105"
-            />
-          </div>
         </div>
-
-        {/* Navigation Arrows */}
-        <button className="absolute left-6 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-100 transition">
-          ◀
-        </button>
-        <button className="absolute right-6 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-100 transition">
-          ▶
-        </button>
       </section>
 
       {/* Categories Section */}
-      <section className="py-16">
-        <div className="container mx-auto">
-          <h3 className="text-2xl font-semibold text-center mb-12">Shop by Categories</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {categories.map((cat, i) => (
-              <div
-                key={i}
-                className="bg-gray-100 p-10 text-center rounded-lg font-medium hover:bg-gradient-to-r hover:from-yellow-400 hover:to-orange-400 hover:text-white cursor-pointer shadow transition transform hover:scale-105"
-              >
-                <div className="mb-3 flex justify-center">{cat.icon}</div>
-                {cat.name}
-              </div>
-            ))}
+<section className="py-16">
+  <div className="container mx-auto">
+    <h3 className="text-2xl font-semibold text-center mb-12 text-gray-800">
+      Shop by Categories
+    </h3>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      {categories.map((cat, i) => (
+        <div
+          key={i}
+          className="relative rounded-lg overflow-hidden cursor-pointer shadow-lg transition transform hover:scale-105 hover:shadow-2xl bg-yellow-400 flex flex-col items-center justify-center py-16"
+        >
+          <div className="mb-4 animate-bounce text-white">
+            {React.cloneElement(cat.icon, { className: "text-white" })}
           </div>
+          <h4 className="text-white text-xl font-semibold">{cat.name}</h4>
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
+
+
 
       {/* Featured Products Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto">
-          <h3 className="text-2xl font-semibold text-center mb-12">Featured Products</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-            {[1, 2, 3, 4].map((prod) => (
-              <div
-                key={prod}
-                className="bg-white p-6 shadow-lg rounded-lg text-center transition transform hover:scale-105 hover:shadow-xl"
-              >
-                <div className="w-full h-48 bg-gradient-to-r from-gray-200 to-gray-300 mb-4 rounded"></div>
-                <h4 className="font-semibold text-lg">Product {prod}</h4>
-                <p className="text-gray-600 mb-3">$99.99</p>
-                <div className="flex justify-center space-x-3">
-                  <button className="bg-yellow-500 text-white px-5 py-2 rounded-md font-medium hover:bg-yellow-600 transition">
-                    Add to Cart
-                  </button>
-                  <button className="border border-yellow-500 text-yellow-600 px-5 py-2 rounded-md font-medium hover:bg-yellow-50 transition">
-                    View
-                  </button>
+          <h3 className="text-2xl font-semibold text-center mb-12">
+            Featured Products
+          </h3>
+          {loading ? (
+            <p className="text-center text-gray-600">Loading products...</p>
+          ) : error ? (
+            <p className="text-center text-red-500">{error}</p>
+          ) : products.length === 0 ? (
+            <p className="text-center text-gray-600">No products available.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+              {products.map((product) => (
+                <div
+                  key={product._id}
+                  className="bg-white p-6 shadow-lg rounded-lg text-center transition transform hover:scale-105 hover:shadow-xl"
+                >
+                  <div className="w-full h-48 flex items-center justify-center bg-gray-100 mb-4 rounded">
+                    <img
+                      src={getProductImage(product.image)}
+                      alt={product.name}
+                      className="h-full object-contain"
+                    />
+                  </div>
+                  <h4 className="font-semibold text-lg">{product.name}</h4>
+                  <p className="text-gray-600 mb-2 line-clamp-2">
+                    {product.description}
+                  </p>
+                  <p className="text-gray-600 mb-2">Stock: {product.stock}</p>
+                  <p className="text-gray-800 font-bold mb-3">₹{product.price}</p>
+                  <div className="flex justify-center space-x-3">
+                    <button
+                      onClick={() =>
+                        addToCart({
+                          productId: product._id,
+                          name: product.name,
+                          price: product.price,
+                          image: product.image,
+                          quantity: 1,
+                        })
+                      }
+                      className="bg-yellow-500 text-white px-5 py-2 rounded-md font-medium hover:bg-yellow-600 transition"
+                    >
+                      Add to Cart
+                    </button>
+                    <button className="border border-yellow-500 text-yellow-600 px-5 py-2 rounded-md font-medium hover:bg-yellow-50 transition">
+                      View
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>
